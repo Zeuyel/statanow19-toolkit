@@ -10,20 +10,32 @@ media_path="$repo_root/artifacts/original/StataNow19Linux64.tar.gz"
 upstream_url="${UPSTREAM_URL:-https://public.econ.duke.edu/stata/installers/19/StataNow19Linux64.tar.gz}"
 upstream_sha256="${UPSTREAM_SHA256:-5f5691a312528152c910302e05f7fb05b2d8f8310780e435b105cd01edd763a3}"
 
-copy_pkg_usr_lib_tree() {
+download_latest_archive_pkg() {
   local pkg="$1"
+  local out="$2"
+  local prefix=${pkg:0:1}
+  local index_url="https://archive.archlinux.org/packages/$prefix/$pkg/"
+  local filename
+
+  filename=$(curl -fsSL "$index_url" | sed -nE "s/.*href=\"(${pkg}-[^\"]+-x86_64\\.pkg\\.tar\\.(zst|xz))\".*/\\1/p" | sort -uV | tail -n 1)
+  [[ -n "$filename" ]] || {
+    echo "Unable to resolve archived package for $pkg from $index_url" >&2
+    return 1
+  }
+
+  curl -L --fail --retry 3 --retry-delay 2 "$index_url$filename" -o "$out"
+}
+
+extract_pkg_usr_lib_tree() {
+  local pkg_file="$1"
   local dest_root="$2"
+  local tmp_dir
+
+  tmp_dir=$(mktemp -d)
+  bsdtar -xf "$pkg_file" -C "$tmp_dir"
   install -d "$dest_root"
-  while IFS= read -r path; do
-    [[ "$path" == /usr/lib/* ]] || continue
-    local rel=${path#/usr/lib/}
-    if [[ -d "$path" ]]; then
-      install -d "$dest_root/$rel"
-    elif [[ -L "$path" || -f "$path" ]]; then
-      install -d "$dest_root/$(dirname "$rel")"
-      cp -a "$path" "$dest_root/$rel"
-    fi
-  done < <(pacman -Qlq "$pkg" | sort -u)
+  cp -a "$tmp_dir/usr/lib/." "$dest_root/"
+  rm -rf "$tmp_dir"
 }
 
 rm -rf "$dist_dir" "$stage_root" "$ci_root/work"
@@ -39,7 +51,9 @@ if [[ "$current_sha" != "$upstream_sha256" ]]; then
 fi
 printf '%s  %s\n' "$upstream_sha256" "$media_path" | sha256sum -c -
 
-copy_pkg_usr_lib_tree gtk2 "$stage_root/gtk2/usr/lib"
+gtk2_pkg="$ci_root/work/gtk2.pkg.tar.zst"
+download_latest_archive_pkg gtk2 "$gtk2_pkg"
+extract_pkg_usr_lib_tree "$gtk2_pkg" "$stage_root/gtk2/usr/lib"
 install -m755 "$repo_root/delivery/license-builder/statanow19-license-builder.py" "$pkg_dir/statanow19-license-builder.py"
 
 (

@@ -67,8 +67,10 @@ jobs:
             archlinux:base-devel \
             bash -lc '
               set -euo pipefail
-              pacman -Sy --noconfirm archlinux-keyring
-              pacman -Syu --noconfirm base-devel curl python libarchive gtk2
+              pacman-key --init
+              pacman-key --populate archlinux
+              pacman -Sy --noconfirm --needed archlinux-keyring
+              pacman -S --noconfirm --needed base-devel git curl python libarchive
               useradd -m builder
               chown -R builder:builder /work
               su builder -c "/work/scripts/ci/build-release.sh"
