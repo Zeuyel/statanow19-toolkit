@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=StataNow 19 MP
+Name[zh_CN]=StataNow 19 MP
+Comment=Launch packaged StataNow 19 MP
+Comment[zh_CN]=启动打包后的 StataNow 19 MP
+Exec=xstatanow19-mp
+TryExec=xstatanow19-mp
+Icon=/opt/statanow19-runtime/share/icons/stata19.png
+Terminal=false
+StartupNotify=true
+Categories=Science;
+Keywords=stata;license;ctf;

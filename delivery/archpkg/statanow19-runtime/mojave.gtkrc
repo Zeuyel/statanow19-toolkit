@@ -1,0 +1,102 @@
+# Mojave-inspired light GTK2 theme for local Stata GUI use.
+# Kept engine-free so it works with the staged GTK2 runtime only.
+
+gtk-theme-name = "Default"
+gtk-font-name = "Noto Sans 10"
+gtk-button-images = 0
+gtk-menu-images = 0
+gtk-toolbar-style = GTK_TOOLBAR_BOTH_HORIZ
+gtk-color-scheme = "panel:#ece9e3\nwindow:#f6f4ef\nwindow_alt:#ebe7e0\nborder:#c9c2b8\naccent:#0a84ff\naccent_soft:#dcecff\nink:#242424\nmuted:#726d66\nentry:#ffffff\nentry_alt:#f9f7f3\nselection_text:#ffffff"
+
+style "mojave-default"
+{
+  xthickness = 1
+  ythickness = 1
+
+  bg[NORMAL] = @window
+  bg[PRELIGHT] = "#fbfaf7"
+  bg[ACTIVE] = "#ddd8d0"
+  bg[SELECTED] = @accent
+  bg[INSENSITIVE] = "#ece7e1"
+
+  fg[NORMAL] = @ink
+  fg[PRELIGHT] = @ink
+  fg[ACTIVE] = @ink
+  fg[SELECTED] = @selection_text
+  fg[INSENSITIVE] = @muted
+
+  text[NORMAL] = @ink
+  text[PRELIGHT] = @ink
+  text[ACTIVE] = @ink
+  text[SELECTED] = @selection_text
+  text[INSENSITIVE] = @muted
+
+  base[NORMAL] = @entry
+  base[PRELIGHT] = @entry_alt
+  base[ACTIVE] = "#f1eee8"
+  base[SELECTED] = @accent
+  base[INSENSITIVE] = "#efebe5"
+
+  GtkWidget::focus-line-width = 1
+  GtkWidget::focus-padding = 0
+  GtkButton::default-border = { 8, 8, 5, 5 }
+  GtkPaned::handle-size = 7
+  GtkRange::slider-width = 12
+  GtkScrollbar::min-slider-length = 28
+  GtkScrolledWindow::scrollbar-spacing = 0
+}
+
+style "mojave-window" = "mojave-default"
+{
+  bg[NORMAL] = @panel
+}
+
+style "mojave-button" = "mojave-default"
+{
+  bg[NORMAL] = "#f4f2ee"
+  bg[PRELIGHT] = "#ffffff"
+  bg[ACTIVE] = "#d8d2ca"
+}
+
+style "mojave-entry" = "mojave-default"
+{
+  base[NORMAL] = @entry
+  base[PRELIGHT] = @entry
+  base[ACTIVE] = @entry_alt
+}
+
+style "mojave-menu" = "mojave-default"
+{
+  bg[NORMAL] = "#efebe5"
+  bg[PRELIGHT] = @accent_soft
+  bg[ACTIVE] = @accent_soft
+  fg[PRELIGHT] = @ink
+  text[PRELIGHT] = @ink
+}
+
+style "mojave-toolbar" = "mojave-default"
+{
+  bg[NORMAL] = "#ebe7e0"
+}
+
+style "mojave-status" = "mojave-default"
+{
+  bg[NORMAL] = "#e7e2da"
+  fg[NORMAL] = "#4f4a45"
+}
+
+class "*" style "mojave-default"
+class "GtkWindow" style "mojave-window"
+class "GtkDialog" style "mojave-window"
+class "GtkButton" style "mojave-button"
+class "GtkToggleButton" style "mojave-button"
+class "GtkCheckButton" style "mojave-button"
+class "GtkRadioButton" style "mojave-button"
+class "GtkEntry" style "mojave-entry"
+class "GtkTextView" style "mojave-entry"
+class "GtkTreeView" style "mojave-entry"
+class "GtkMenu" style "mojave-menu"
+class "GtkMenuBar" style "mojave-menu"
+class "GtkMenuItem" style "mojave-menu"
+class "GtkToolbar" style "mojave-toolbar"
+class "GtkStatusbar" style "mojave-status"

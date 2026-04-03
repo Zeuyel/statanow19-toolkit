@@ -1,0 +1,13 @@
+# Local reverse-engineering outputs
+artifacts/original/
+artifacts/linuxpkg/
+artifacts/media/
+runtime/
+
+# Local and CI build outputs
+.ci/
+dist/
+delivery/archpkg/statanow19-runtime/*.pkg.tar.zst
+
+tools/__pycache__/
+*.pyc

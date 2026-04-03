@@ -1,0 +1,11 @@
+./
+./install
+./license.pdf
+./unix/
+./unix/linux64/
+./unix/linux64/ado.taz
+./unix/linux64/base.taz
+./unix/linux64/bins.taz
+./unix/linux64/docs.taz
+./unix/linux64/inst2
+./unix/linux64/setrwxp

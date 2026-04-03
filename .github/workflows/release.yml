@@ -1,0 +1,95 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to create or update
+        required: true
+        default: statanow19-runtime-v19.5.0-1
+      source_url:
+        description: Upstream StataNow 19 Linux media URL
+        required: true
+        default: https://public.econ.duke.edu/stata/installers/19/StataNow19Linux64.tar.gz
+      source_sha256:
+        description: Expected SHA-256 for the upstream media
+        required: true
+        default: 5f5691a312528152c910302e05f7fb05b2d8f8310780e435b105cd01edd763a3
+      draft_release:
+        description: Publish as draft release
+        required: true
+        type: boolean
+        default: true
+  push:
+    tags:
+      - 'statanow19-runtime-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Resolve release metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            echo "tag=${{ inputs.release_tag }}" >> "$GITHUB_OUTPUT"
+            echo "source_url=${{ inputs.source_url }}" >> "$GITHUB_OUTPUT"
+            echo "source_sha256=${{ inputs.source_sha256 }}" >> "$GITHUB_OUTPUT"
+            echo "draft=${{ inputs.draft_release }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "source_url=https://public.econ.duke.edu/stata/installers/19/StataNow19Linux64.tar.gz" >> "$GITHUB_OUTPUT"
+            echo "source_sha256=5f5691a312528152c910302e05f7fb05b2d8f8310780e435b105cd01edd763a3" >> "$GITHUB_OUTPUT"
+            echo "draft=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build release assets in Arch Linux
+        shell: bash
+        env:
+          UPSTREAM_URL: ${{ steps.meta.outputs.source_url }}
+          UPSTREAM_SHA256: ${{ steps.meta.outputs.source_sha256 }}
+        run: |
+          set -euo pipefail
+          docker pull archlinux:base-devel
+          docker run --rm \
+            -e UPSTREAM_URL \
+            -e UPSTREAM_SHA256 \
+            -v "$PWD:/work" \
+            -w /work \
+            archlinux:base-devel \
+            bash -lc '
+              set -euo pipefail
+              pacman -Sy --noconfirm archlinux-keyring
+              pacman -Syu --noconfirm base-devel curl python libarchive gtk2
+              useradd -m builder
+              chown -R builder:builder /work
+              su builder -c "/work/scripts/ci/build-release.sh"
+            '
+
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: statanow19-release-dist
+          path: dist/
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: ${{ steps.meta.outputs.tag }}
+          draft: ${{ steps.meta.outputs.draft == 'true' }}
+          body_path: dist/RELEASE_NOTES.md
+          files: |
+            dist/*.pkg.tar.zst
+            dist/*.py
+            dist/SHA256SUMS.txt
+            dist/BUILD-INFO.txt
