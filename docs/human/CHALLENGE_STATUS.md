@@ -143,7 +143,7 @@ Primary references:
 
 ## 2026-04-03 Release Validation
 
--  已验证通过，run id: 
-- Draft Release 已生成：
-- Release 页面：
-- 当前已确认资产包含 builder、、、主 ；同时还产出了一个  包。
+- `workflow_dispatch` 已验证通过，run id: `23944904421`
+- Draft Release 已生成：`statanow19-runtime-v19.5.0-1`
+- Release 页面：`https://github.com/Zeuyel/statanow19-toolkit/releases/tag/untagged-100b6dc31e49b06c5c21`
+- 当前已确认资产包含 builder、`SHA256SUMS.txt`、`BUILD-INFO.txt`、主 `.pkg.tar.zst`；同时还产出了一个 `-debug` 包。
