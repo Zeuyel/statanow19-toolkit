@@ -140,3 +140,10 @@ Primary references:
 - 首次推送只保留源码、文档和 CI/CD 配置；本地生成物与上游二进制未进入 git。
 - 仓库内不再依赖本地 `git config user.name/user.email`；提交使用一次性环境变量完成。
 - 下一步应直接在 GitHub 上执行一次 `workflow_dispatch`，确认 Release 资产能完整产出。
+
+## 2026-04-03 Release Validation
+
+-  已验证通过，run id: 
+- Draft Release 已生成：
+- Release 页面：
+- 当前已确认资产包含 builder、、、主 ；同时还产出了一个  包。
