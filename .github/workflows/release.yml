@@ -19,7 +19,7 @@ on:
         description: Publish as draft release
         required: true
         type: boolean
-        default: true
+        default: false
   push:
     tags:
       - 'statanow19-runtime-v*'
@@ -27,12 +27,17 @@ on:
 permissions:
   contents: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Resolve release metadata
         id: meta
