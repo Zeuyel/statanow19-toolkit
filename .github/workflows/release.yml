@@ -70,8 +70,11 @@ jobs:
               pacman-key --init
               pacman-key --populate archlinux
               pacman -Sy --noconfirm --needed archlinux-keyring
-              pacman -S --noconfirm --needed base-devel git curl python libarchive
+              pacman -S --noconfirm --needed base-devel git sudo curl python libarchive
+              install -d /etc/sudoers.d
               useradd -m builder
+              printf "builder ALL=(ALL) NOPASSWD: ALL\n" > /etc/sudoers.d/builder
+              chmod 440 /etc/sudoers.d/builder
               chown -R builder:builder /work
               su builder -c "/work/scripts/ci/build-release.sh"
             '

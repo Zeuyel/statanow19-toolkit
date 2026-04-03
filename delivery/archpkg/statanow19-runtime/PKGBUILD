@@ -6,7 +6,7 @@ arch=('x86_64')
 url='https://public.econ.duke.edu/stata/installers/19/StataNow19Linux64.tar.gz'
 license=('custom')
 depends=('python' 'ncurses')
-makedepends=('bsdtar')
+makedepends=('libarchive')
 source=(
   'statanow19-mp.sh'
   'xstatanow19-mp.sh'
