@@ -133,3 +133,10 @@ Primary references:
 - 发布流会从 Duke 下载 `StataNow19Linux64.tar.gz`，校验 SHA-256，然后在 Arch Linux 容器内构建 `statanow19-runtime`。
 - Release 资产现在规划为：构建出的 `.pkg.tar.zst`、版本化 builder 脚本、`SHA256SUMS.txt`、`BUILD-INFO.txt`。
 - 仓库本身不应再提交上游 tarball、运行时工作目录或最终 `.pkg.tar.zst`。
+
+## 2026-04-03 GitHub Publication
+
+- 源码仓库已发布到：
+- 首次推送只保留源码、文档和 CI/CD 配置；本地生成物与上游二进制未进入 git。
+- 仓库内不再依赖本地 ；提交使用一次性环境变量完成。
+- 下一步应直接在 GitHub 上执行一次 ，确认 Release 资产能完整产出。
