@@ -1,23 +1,22 @@
 pkgname=statanow19-runtime
 pkgver=19.5.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Packaged StataNow 19 runtime with bundled license builder and self-managed per-user workspace'
 arch=('x86_64')
 url='https://public.econ.duke.edu/stata/installers/19/StataNow19Linux64.tar.gz'
 license=('custom')
-depends=('python' 'ncurses')
+depends=('ncurses')
 makedepends=('libarchive')
 source=(
   'statanow19-mp.sh'
   'xstatanow19-mp.sh'
   'statanow19-license-builder.sh'
-  'statanow19-license-builder.py'
   'statanow19-config.env.sample'
   'statanow19-mp.desktop'
   'mojave.gtkrc'
   'README.package.txt'
 )
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 _challenge_root=${CHALLENGE_ROOT:-$(cd "$startdir/../../.." && pwd)}
 _gtk2_lib_root=${GTK2_LIB_ROOT:-$_challenge_root/runtime/localdeps/gtk2/usr/lib}
@@ -46,7 +45,7 @@ package() {
   ln -s /usr/lib/libtinfo.so.6 "$pkgdir/opt/statanow19-runtime/lib/ncurses6/libtinfo.so.6"
 
   install -d "$pkgdir/opt/statanow19-runtime/tools" "$pkgdir/opt/statanow19-runtime/share/themes" "$pkgdir/opt/statanow19-runtime/share/icons"
-  install -m755 "$srcdir/statanow19-license-builder.py" "$pkgdir/opt/statanow19-runtime/tools/statanow19-license-builder.py"
+  install -m755 "$srcdir/statanow19-license-builder.sh" "$pkgdir/opt/statanow19-runtime/tools/statanow19-license-builder.sh"
   install -m644 "$srcdir/statanow19-config.env.sample" "$pkgdir/opt/statanow19-runtime/share/config.env.sample"
   install -m644 "$srcdir/mojave.gtkrc" "$pkgdir/opt/statanow19-runtime/share/themes/mojave.gtkrc"
   install -m644 "$srcdir/README.package.txt" "$pkgdir/opt/statanow19-runtime/README.txt"

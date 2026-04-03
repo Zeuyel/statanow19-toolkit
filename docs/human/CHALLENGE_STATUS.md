@@ -121,7 +121,7 @@ Primary references:
 
 - 最终交付物已经落在 `delivery/`，而不是 `~/.local/opt/stata-mp` 这类本地验证目录。
 - 交付结构固定为：
-  - `delivery/license-builder/statanow19-license-builder.py`
+  - `delivery/license-builder/statanow19-license-builder.sh`
   - `delivery/archpkg/statanow19-runtime/PKGBUILD`
   - `delivery/archpkg/statanow19-runtime/statanow19-runtime-19.5.0-1-x86_64.pkg.tar.zst`
 - 本地安装只用于验证 StataNow19 dated-license 路径和依赖内置方案，不作为最终交付产物。
@@ -147,3 +147,9 @@ Primary references:
 - Draft Release 已生成：`statanow19-runtime-v19.5.0-1`
 - Release 页面：`https://github.com/Zeuyel/statanow19-toolkit/releases/tag/untagged-100b6dc31e49b06c5c21`
 - 当前已确认资产包含 builder、`SHA256SUMS.txt`、`BUILD-INFO.txt`、主 `.pkg.tar.zst`；同时还产出了一个 `-debug` 包。
+
+## 2026-04-03 Shell Builder Refresh
+
+- `delivery/license-builder/statanow19-license-builder.sh` 现在是主入口；无参数时进入交互式 shell 提示流程。
+- `delivery/archpkg/statanow19-runtime/statanow19-license-builder.sh` 已从 Python wrapper 改成纯 shell 实现，运行时不再因为 builder 需要 `python` 依赖。
+- `.github/workflows/release.yml` 和 `scripts/ci/build-release.sh` 现在发布 `.sh` builder 资产，并移除了仅为 builder 引入的 Python 安装步骤。

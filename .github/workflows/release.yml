@@ -6,7 +6,7 @@ on:
       release_tag:
         description: Release tag to create or update
         required: true
-        default: statanow19-runtime-v19.5.0-1
+        default: statanow19-runtime-v19.5.0-2
       source_url:
         description: Upstream StataNow 19 Linux media URL
         required: true
@@ -75,7 +75,7 @@ jobs:
               pacman-key --init
               pacman-key --populate archlinux
               pacman -Sy --noconfirm --needed archlinux-keyring
-              pacman -S --noconfirm --needed base-devel git sudo curl python libarchive
+              pacman -S --noconfirm --needed base-devel git sudo curl libarchive
               install -d /etc/sudoers.d
               useradd -m builder
               printf "builder ALL=(ALL) NOPASSWD: ALL\n" > /etc/sudoers.d/builder
@@ -100,6 +100,6 @@ jobs:
           body_path: dist/RELEASE_NOTES.md
           files: |
             dist/*.pkg.tar.zst
-            dist/*.py
+            dist/*.sh
             dist/SHA256SUMS.txt
             dist/BUILD-INFO.txt

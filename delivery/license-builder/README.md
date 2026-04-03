@@ -1,12 +1,18 @@
 # StataNow 19 License Builder
 
-入口：`statanow19-license-builder.py`
+主入口：`statanow19-license-builder.sh`
+
+特性：
+- 无参数运行时进入交互式 shell 提示流程
+- 保留 `--preset` / `--field6` / `--output` / `--format` 等非交互参数，方便 CI 或脚本调用
+- 运行时不依赖 Python
 
 示例：
 
 ```bash
-python3 statanow19-license-builder.py --preset mp64
-python3 statanow19-license-builder.py --preset be --field6 03272026 --output ~/.config/statanow19-runtime/stata.lic
+./statanow19-license-builder.sh
+./statanow19-license-builder.sh --non-interactive --preset mp64 --output ~/.config/statanow19-runtime/stata.lic
+./statanow19-license-builder.sh --non-interactive --preset be --field6 01012050 --format license-only
 ```
 
 已验证工作族默认值：

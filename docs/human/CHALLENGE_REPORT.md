@@ -300,7 +300,7 @@ The page keeps the same offline model:
 
 Final operator-facing outputs for the StataNow 19 branch now live under `delivery/`:
 
-- `delivery/license-builder/statanow19-license-builder.py`
+- `delivery/license-builder/statanow19-license-builder.sh`
   - standalone versioned builder for installer-style `Serial number` / `Code` / `Authorization` generation
 - `delivery/archpkg/statanow19-runtime/PKGBUILD`
   - Arch packaging recipe for a self-contained runtime install under `/opt/statanow19-runtime`

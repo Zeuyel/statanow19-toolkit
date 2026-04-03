@@ -1,6 +1,6 @@
 challenge_id: "statanow19-toolkit"
 objective: "Analyze the supplied StataNow19-themed Linux artifact and determine whether its validation path differs materially from the previously mapped Stata18 family."
-current_stage: "workflow_dispatch validated successfully; draft release assets published on GitHub"
+current_stage: "shell-native interactive builder staged in delivery, package, and release paths; awaiting refreshed release publication"
 completed:
   - "Located ~/Downloads/StataNow19Linux64.tar.gz."
   - "Computed SHA-256 for the downloaded package."
@@ -29,10 +29,12 @@ completed:
   - "Validated the staged StataNow 19 package artifact at delivery/archpkg/statanow19-runtime/statanow19-runtime-19.5.0-1-x86_64.pkg.tar.zst."
   - "Added repository-facing GitHub Actions release workflow and Arch-container build script."
   - "Published the source-controlled delivery tree to https://github.com/Zeuyel/statanow19-toolkit on branch main."
+  - "Replaced the packaged license builder path with a pure Bash interactive shell script and removed the runtime Python dependency from the Arch package and release asset flow."
 blockers:
   - "The exact internal comparison logic for malformed but in-range field6 values is still not fully explained."
 next_actions:
 
+  - "Run workflow_dispatch again so GitHub Release publishes the shell-native .sh builder asset and refreshed package metadata."
   - "Determine whether the field6 lower-year bound is also fixed, or whether only the upper-year bound at 2050 is enforced."
   - "Explain the malformed-date behavior path in the runtime or library code, especially why values such as 13312026 can still start."
   - "Compare these refined StataNow19 runtime gates against the archived Stata18 findings."
@@ -57,12 +59,13 @@ evidence_refs:
   - "../stata18-toolkit/tools/license_lab.html"
   - "docs/human/CHALLENGE_REPORT.md"
   - "delivery/README.md"
-  - "delivery/license-builder/statanow19-license-builder.py"
+  - "delivery/license-builder/statanow19-license-builder.sh"
   - "delivery/archpkg/statanow19-runtime/PKGBUILD"
+  - "delivery/archpkg/statanow19-runtime/statanow19-license-builder.sh"
   - "delivery/archpkg/statanow19-runtime/statanow19-runtime-19.5.0-1-x86_64.pkg.tar.zst"
   - ".github/workflows/release.yml"
   - "scripts/ci/build-release.sh"
   - ".gitignore"
   - "https://github.com/Zeuyel/statanow19-toolkit"
   - "https://github.com/Zeuyel/statanow19-toolkit/releases/tag/untagged-100b6dc31e49b06c5c21"
-last_updated: "2026-04-03T19:47:14+08:00"
+last_updated: "2026-04-03T20:53:03+08:00"

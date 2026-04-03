@@ -54,7 +54,7 @@ printf '%s  %s\n' "$upstream_sha256" "$media_path" | sha256sum -c -
 gtk2_pkg="$ci_root/work/gtk2.pkg.tar.zst"
 download_latest_archive_pkg gtk2 "$gtk2_pkg"
 extract_pkg_usr_lib_tree "$gtk2_pkg" "$stage_root/gtk2/usr/lib"
-install -m755 "$repo_root/delivery/license-builder/statanow19-license-builder.py" "$pkg_dir/statanow19-license-builder.py"
+install -m755 "$repo_root/delivery/license-builder/statanow19-license-builder.sh" "$pkg_dir/statanow19-license-builder.sh"
 
 (
   cd "$pkg_dir"
@@ -66,7 +66,7 @@ install -m755 "$repo_root/delivery/license-builder/statanow19-license-builder.py
   makepkg -Cfs --noconfirm
 )
 
-cp "$repo_root/delivery/license-builder/statanow19-license-builder.py" "$dist_dir/"
+cp "$repo_root/delivery/license-builder/statanow19-license-builder.sh" "$dist_dir/"
 cat > "$dist_dir/BUILD-INFO.txt" <<EOF2
 package=statanow19-runtime
 source_url=$upstream_url
@@ -83,7 +83,7 @@ cat > "$dist_dir/RELEASE_NOTES.md" <<EOF2
 ## Release Assets
 
 - Built Arch package \`.pkg.tar.zst\`
-- Versioned license builder \`statanow19-license-builder.py\`
+- Versioned shell license builder \`statanow19-license-builder.sh\`
 - \`SHA256SUMS.txt\` and \`BUILD-INFO.txt\`
 EOF2
 (
