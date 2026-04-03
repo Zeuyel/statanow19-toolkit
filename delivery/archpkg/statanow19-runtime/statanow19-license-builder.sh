@@ -321,50 +321,67 @@ prompt_yes_no() {
   [[ "$answer" =~ ^[Yy]$ ]]
 }
 
+
+show_interactive_field_guide() {
+  echo "参数说明:"
+  echo "- be: 基础版模板, 不带 MP 核心数"
+  echo "- mp32: MP 32 核模板"
+  echo "- mp64: MP 64 核模板"
+  echo "- field1/field2/field3: 内部兼容字段, 通常保持默认值 999 / 24 / 5"
+  echo "- field4: 席位数/用户数, 9999 表示 Unlimited"
+  echo "- field5: 授权类型, h 表示 student lab"
+  echo "- field6: 到期日, StataNow 必填, 格式 MMDDYYYY, 例如 01012050"
+  echo "- field7: MP 核心数, 基础版 BE 留空, MP 常见为 32 或 64"
+  echo "- Licensed-to line1/line2: 授权名称显示文本"
+  echo "- split-prefix: Authorization 和 Code 的内部切分位, 正常保持 4"
+  echo
+}
+
 run_interactive() {
   local new_preset
 
   while :; do
-    echo "Interactive license builder for $DISPLAY_NAME"
+    echo "交互式 license 生成器: $DISPLAY_NAME"
     echo
 
-    new_preset=$(prompt_default "Preset (be/mp32/mp64)" "$preset")
+    show_interactive_field_guide
+    new_preset=$(prompt_default "授权模板 preset: be=基础版, mp32=32核MP, mp64=64核MP" "$preset")
     if [[ "$new_preset" != "$preset" ]]; then
       preset="$new_preset"
       apply_preset "$preset"
     fi
 
-    serial=$(prompt_default "Serial number" "$serial")
-    field1=$(prompt_default "field1" "$field1")
-    field2=$(prompt_default "field2" "$field2")
-    field3=$(prompt_default "field3" "$field3")
-    field4=$(prompt_default "field4" "$field4")
-    field5=$(prompt_default "field5" "$field5")
-    field6=$(prompt_default "field6 (MMDDYYYY required)" "$field6")
-    field7=$(prompt_default "field7 (blank for BE)" "$field7")
-    line1=$(prompt_default "Licensed-to line1" "$line1")
-    line2=$(prompt_default "Licensed-to line2" "$line2")
-    split_prefix=$(prompt_default "split-prefix" "$split_prefix")
+    serial=$(prompt_default "序列号 Serial number" "$serial")
+    field1=$(prompt_default "field1 产品族标记, 通常保持 999" "$field1")
+    field2=$(prompt_default "field2 版本族标记, 通常保持 24" "$field2")
+    field3=$(prompt_default "field3 edition 标记, 常用 5" "$field3")
+    field4=$(prompt_default "field4 席位数/用户数, 9999=Unlimited" "$field4")
+    field5=$(prompt_default "field5 授权类型, h=student lab" "$field5")
+    field6=$(prompt_default "field6 到期日 MMDDYYYY, StataNow 必填" "$field6")
+    field7=$(prompt_default "field7 MP 核心数, BE 留空" "$field7")
+    line1=$(prompt_default "授权显示名称第1行" "$line1")
+    line2=$(prompt_default "授权显示名称第2行" "$line2")
+    split_prefix=$(prompt_default "split-prefix 内部分割位, 通常保持 4" "$split_prefix")
 
     validate_fields
     if ((${#errors[@]})); then
       print_errors
       echo
-      echo "Please re-enter the values."
+      echo "请重新输入这些值。"
       echo
       continue
     fi
 
     if ((${#warnings[@]})); then
       print_warnings
-      if ! prompt_yes_no "Continue with these warnings" "n"; then
+      if ! prompt_yes_no "存在警告, 是否继续" "n"; then
         echo
         continue
       fi
     fi
 
-    if prompt_yes_no "Write stata.lic to a file" "y"; then
-      output=$(prompt_default "Output path" "${output:-$DEFAULT_OUTPUT}")
+    if prompt_yes_no "是否写出 stata.lic 文件" "y"; then
+      output=$(prompt_default "输出路径 Output path" "${output:-$DEFAULT_OUTPUT}")
       write_output=1
     else
       output=""
