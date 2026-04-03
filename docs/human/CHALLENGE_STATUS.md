@@ -153,3 +153,10 @@ Primary references:
 - `delivery/license-builder/statanow19-license-builder.sh` 现在是主入口；无参数时进入交互式 shell 提示流程。
 - `delivery/archpkg/statanow19-runtime/statanow19-license-builder.sh` 已从 Python wrapper 改成纯 shell 实现，运行时不再因为 builder 需要 `python` 依赖。
 - `.github/workflows/release.yml` 和 `scripts/ci/build-release.sh` 现在发布 `.sh` builder 资产，并移除了仅为 builder 引入的 Python 安装步骤。
+
+## 2026-04-03 Shell Release Publication
+
+- 重新触发的 `workflow_dispatch` 已成功完成，run id: `23947875342`
+- 新 release tag：`statanow19-runtime-v19.5.0-2`
+- Release 页面：`https://github.com/Zeuyel/statanow19-toolkit/releases/tag/statanow19-runtime-v19.5.0-2`
+- 已确认资产包含：`statanow19-license-builder.sh`、`statanow19-runtime-19.5.0-2-x86_64.pkg.tar.zst`、对应 `-debug` 包、`SHA256SUMS.txt`、`BUILD-INFO.txt`
