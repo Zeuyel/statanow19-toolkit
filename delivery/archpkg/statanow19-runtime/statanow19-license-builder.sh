@@ -322,46 +322,144 @@ prompt_yes_no() {
 }
 
 
-show_interactive_field_guide() {
-  echo "参数说明:"
-  echo "- be: 基础版模板, 不带 MP 核心数"
-  echo "- mp32: MP 32 核模板"
-  echo "- mp64: MP 64 核模板"
-  echo "- field1/field2/field3: 内部兼容字段, 通常保持默认值 999 / 24 / 5"
-  echo "- field4: 席位数/用户数, 9999 表示 Unlimited"
-  echo "- field5: 授权类型, h 表示 student lab"
-  echo "- field6: 到期日, StataNow 必填, 格式 MMDDYYYY, 例如 01012050"
-  echo "- field7: MP 核心数, 基础版 BE 留空, MP 常见为 32 或 64"
-  echo "- Licensed-to line1/line2: 授权名称显示文本"
-  echo "- split-prefix: Authorization 和 Code 的内部切分位, 正常保持 4"
-  echo
+field5_to_kind() {
+  case "$1" in
+    a|b) printf '%s' 'plain-user' ;;
+    c|d) printf '%s' 'network' ;;
+    e|f) printf '%s' 'compute-server' ;;
+    g|h|'') printf '%s' 'student-lab' ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
+kind_to_field5() {
+  case "$1" in
+    plain-user|user|plain|a|b) printf '%s' 'b' ;;
+    network|c|d) printf '%s' 'd' ;;
+    compute-server|computer-server|compute|computer|server|e|f) printf '%s' 'f' ;;
+    student-lab|student|lab|g|h|'') printf '%s' 'h' ;;
+    *) return 1 ;;
+  esac
+}
+
+apply_interactive_profile() {
+  local profile="$1"
+  local cores="$2"
+
+  case "$profile" in
+    be|basic)
+      preset='be'
+      apply_preset 'be'
+      field7=''
+      ;;
+    mp|mp32|mp64)
+      [[ "$cores" =~ ^[0-9]+$ ]] || return 1
+      if [[ "$cores" == '32' ]]; then
+        preset='mp32'
+        apply_preset 'mp32'
+      elif [[ "$cores" == '64' ]]; then
+        preset='mp64'
+        apply_preset 'mp64'
+      else
+        preset='mp64'
+        apply_preset 'mp64'
+        field7="$cores"
+      fi
+      ;;
+    *) return 1 ;;
+  esac
 }
 
 run_interactive() {
-  local new_preset
+  local profile_hint profile_choice cores_input auth_kind raw_field5
 
   while :; do
     echo "交互式 license 生成器: $DISPLAY_NAME"
     echo
 
-    show_interactive_field_guide
-    new_preset=$(prompt_default "授权模板 preset: be=基础版, mp32=32核MP, mp64=64核MP" "$preset")
-    if [[ "$new_preset" != "$preset" ]]; then
-      preset="$new_preset"
-      apply_preset "$preset"
+    if [[ "$preset" == 'be' ]]; then
+      profile_hint='be'
+    else
+      profile_hint='mp'
     fi
 
-    serial=$(prompt_default "序列号 Serial number" "$serial")
-    field1=$(prompt_default "field1 产品族标记, 通常保持 999" "$field1")
-    field2=$(prompt_default "field2 版本族标记, 通常保持 24" "$field2")
-    field3=$(prompt_default "field3 edition 标记, 常用 5" "$field3")
-    field4=$(prompt_default "field4 席位数/用户数, 9999=Unlimited" "$field4")
-    field5=$(prompt_default "field5 授权类型, h=student lab" "$field5")
-    field6=$(prompt_default "field6 到期日 MMDDYYYY, StataNow 必填" "$field6")
-    field7=$(prompt_default "field7 MP 核心数, BE 留空" "$field7")
+    while :; do
+      profile_choice=$(prompt_default "授权形态: be=基础版, mp=多核版" "$profile_hint")
+      case "$profile_choice" in
+        mp32) profile_choice='mp'; cores_input='32'; break ;;
+        mp64) profile_choice='mp'; cores_input='64'; break ;;
+        be|basic) cores_input=''; break ;;
+        mp) cores_input=''; break ;;
+        *)
+          echo "error: 授权形态只支持 be 或 mp" >&2
+          echo
+          ;;
+      esac
+    done
+
+    if [[ "$profile_choice" == 'mp' ]]; then
+      while :; do
+        if [[ -z "$cores_input" ]]; then
+          cores_input=$(prompt_default "MP 核心数" "${field7:-64}")
+        fi
+        if apply_interactive_profile "$profile_choice" "$cores_input"; then
+          break
+        fi
+        echo "error: MP 核心数必须是数字" >&2
+        echo
+        cores_input=''
+      done
+    else
+      apply_interactive_profile "$profile_choice" ''
+    fi
+
+    while :; do
+      serial=$(prompt_default "序列号 Serial number" "$serial")
+      if [[ "$serial" =~ ^[0-9]+$ ]]; then
+        break
+      fi
+      echo "error: 序列号必须是数字" >&2
+      echo
+    done
+
+    while :; do
+      field4=$(prompt_default "席位数/用户数, 9999=Unlimited" "$field4")
+      if [[ "$field4" =~ ^[0-9]+$ ]]; then
+        break
+      fi
+      echo "error: 席位数/用户数必须是数字" >&2
+      echo
+    done
+
+    while :; do
+      auth_kind=$(prompt_default "授权类型: student-lab / plain-user / network / compute-server" "$(field5_to_kind "$field5")")
+      if raw_field5=$(kind_to_field5 "$auth_kind"); then
+        break
+      fi
+      echo "error: 授权类型只支持 student-lab, plain-user, network, compute-server" >&2
+      echo
+    done
+    field5="$raw_field5"
+
+    while :; do
+      field6=$(prompt_default "到期日 MMDDYYYY, 例如 01012050" "$field6")
+      if [[ "$field6" =~ ^[0-9]{8}$ ]] && [[ ${field6:4:4} -le $YEAR_MAX ]]; then
+        break
+      fi
+      echo "error: 到期日必须是 8 位 MMDDYYYY，且年份不能超过 $YEAR_MAX" >&2
+      echo
+    done
+
     line1=$(prompt_default "授权显示名称第1行" "$line1")
     line2=$(prompt_default "授权显示名称第2行" "$line2")
-    split_prefix=$(prompt_default "split-prefix 内部分割位, 通常保持 4" "$split_prefix")
+
+    if prompt_yes_no "是否进入高级模式调整内部兼容字段" "n"; then
+      field1=$(prompt_default "field1 产品族标记" "$field1")
+      field2=$(prompt_default "field2 版本族标记" "$field2")
+      field3=$(prompt_default "field3 edition 标记" "$field3")
+      field5=$(prompt_default "field5 原始授权代码" "$field5")
+      split_prefix=$(prompt_default "split-prefix 内部分割位" "$split_prefix")
+    fi
 
     validate_fields
     if ((${#errors[@]})); then
@@ -384,7 +482,7 @@ run_interactive() {
       output=$(prompt_default "输出路径 Output path" "${output:-$DEFAULT_OUTPUT}")
       write_output=1
     else
-      output=""
+      output=''
       write_output=0
     fi
     break
